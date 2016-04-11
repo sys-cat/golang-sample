@@ -2,6 +2,7 @@ package main
 
 import (
   "fmt"
+  "encoding/base64"
   "crypto/cipher"
   "golang.org/x/crypto/blowfish"
 )
@@ -19,7 +20,7 @@ func blowfishChecksize(pt []byte) []byte {
 }
 
 func blowfishEncrypt(ppt, key []byte) []byte {
-  // Cipherを初期化してBlowfishを実行する
+  // Cipherを初期化してBlowfishで暗号化を実行する
   ecipher, err := blowfish.NewCipher(key)
   if err != nil {
     panic(err)
@@ -32,6 +33,7 @@ func blowfishEncrypt(ppt, key []byte) []byte {
 }
 
 func blowfishDecrypt(et, key []byte) []byte {
+  // 暗号化されたデータを復号化する
   dcipher, err := blowfish.NewCipher(key)
   if err != nil {
     panic(err)
@@ -51,9 +53,12 @@ func main() {
   key := []byte("0123456789")
   pad := blowfishChecksize(text)
   enced := blowfishEncrypt(pad, key)
-  deced := blowfishDecrypt(enced, key)
+  bases := base64.StdEncoding.EncodeToString(enced)
+  dec_base, _ := base64.StdEncoding.DecodeString(bases)
+  deced := blowfishDecrypt(dec_base, key)
   fmt.Printf("text is %s\n", text)
   fmt.Printf("key is %s\n", key)
   fmt.Printf("encrypted is %x\n", enced)
+  fmt.Printf("base64encoded is %s\n", bases)
   fmt.Printf("decrypted is %s\n", deced)
 }
